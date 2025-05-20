@@ -136,21 +136,25 @@ jobs:
               fi
 
         - name: Check that EasyBuild hook is up to date
-          if: ${{ github.event_name == 'pull_request' }}
           run: |
               FILE="eb_hooks.py"
               TEMP_FILE="$(mktemp)"
 
-              # Fetch base branch
-              git fetch origin ${{ github.base_ref }}
+              if [ -n "${{ github.base_ref }}" ]; then
+                # Fetch base branch
+                git fetch origin ${{ github.base_ref }}
 
-              # Check if the hooks has changed in the PR
-              if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "^$FILE$"; then
-                echo "Hooks changed in PR. Using PR version."
-                cp "$FILE" "$TEMP_FILE"
+                # Check if the hooks has changed in the PR
+                if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "^$FILE$"; then
+                  echo "Hooks changed in PR. Using PR version."
+                  cp "$FILE" "$TEMP_FILE"
+                else
+                  echo "File not changed in PR. Using default branch version."
+                  git show origin/${{ github.base_ref }}:$FILE > "$TEMP_FILE"
+                fi
               else
-                echo "File not changed in PR. Using default branch version."
-                git show origin/${{ github.base_ref }}:$FILE > "$TEMP_FILE"
+                echo "Not in PR context, using checked out file"
+                cp "$FILE" "$TEMP_FILE"
               fi
 
               # Compare the hooks to what is shipped in the repository
