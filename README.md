@@ -57,4 +57,4 @@ The software in this repository is distributed under the terms of the
 
 See [LICENSE](https://github.com/EESSI/software-layer/blob/main/LICENSE) for more information.
 
-SPDX-License-Identifier: GPL-2.0-only
+SPDX-License-Identifier: GPL-2.0-only 
